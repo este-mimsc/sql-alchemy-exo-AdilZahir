@@ -2,7 +2,7 @@
 from flask import Flask, jsonify, request
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-
+from models import ForeignKey as ForeignKey, Post as Post, User as User, db as db
 from config import Config
 
 # These extension instances are shared across the app and models
@@ -29,8 +29,7 @@ def create_app(test_config=None):
 
     # Import models here so SQLAlchemy is aware of them before migrations
     # or ``create_all`` run. Students will flesh these out in ``models.py``.
-    import models  # noqa: F401
-
+      # noqa: 
     @app.route("/")
     def index():
         """Simple sanity check route."""
@@ -39,11 +38,22 @@ def create_app(test_config=None):
 
     @app.route("/users", methods=["GET", "POST"])
     def users():
-        """List or create users.
+        if request.method=="GET":
+            allusers=User.query.all()
+        elif request.method=="GET":
+            data=request.get_json()
+            username=data["username"]
+            new_user=User(username=username)
+            db.session.add(new_user)
+            db.session.commit()
+            
 
-        TODO: Students should query ``User`` objects, serialize them to JSON,
-        and handle incoming POST data to create new users.
-        """
+        # """List or create users.
+    
+
+        # TODO: Students should query ``User`` objects, serialize them to JSON,
+        # and handle incoming POST data to create new users.
+        # """
 
         return (
             jsonify({"message": "TODO: implement user listing/creation"}),
@@ -52,11 +62,25 @@ def create_app(test_config=None):
 
     @app.route("/posts", methods=["GET", "POST"])
     def posts():
-        """List or create posts.
+        if request.method=="GET":
+            all_posts=Post.query.all()
+        elif request.method=="POST":
+            data = request.get_json()
+            title = data["title"]
+            content = data["content"]
+            user_id = data["user_id"]
+            new_post = Post(title=title, content=content, author_id=user_id)
+            
+            db.session.add(new_post)
+            db.session.commit()
 
-        TODO: Students should query ``Post`` objects, include user data, and
-        allow creating posts tied to a valid ``user_id``.
-        """
+        
+
+        # """List or create posts.
+
+        # TODO: Students should query ``Post`` objects, include user data, and
+        # allow creating posts tied to a valid ``user_id``.
+        # """
 
         return (
             jsonify({"message": "TODO: implement post listing/creation"}),

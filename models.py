@@ -3,6 +3,7 @@
 The attributes are left intentionally light so students can practice
 adding the proper columns, relationships, and helper methods.
 """
+from sqlalchemy import ForeignKey
 from app import db
 
 
@@ -13,9 +14,10 @@ class User(db.Model):
 
     # TODO: Add id primary key, username (unique + required), and
     # a relationship to ``Post`` named ``posts``.
+    id_post=db.Column(db.Integer,)
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String)  # Students should customize constraints
-
+    username = db.Column(db.String,unique=True,nullable=False)  # Students should customize constraints
+    posts= db.relationship("post",back_populates="auther")
     def __repr__(self):  # pragma: no cover - convenience repr
         return f"<User {getattr(self, 'username', None)}>"
 
@@ -30,7 +32,9 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     content = db.Column(db.Text)
-    user_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer,ForeignKey("users.id"))
+    author=db.relationship("User",back_populates="auther")
+    
 
     def __repr__(self):  # pragma: no cover - convenience repr
         return f"<Post {getattr(self, 'title', None)}>"
